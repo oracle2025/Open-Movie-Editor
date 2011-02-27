@@ -1,0 +1,253 @@
+# Copyright (C) 2005 Richard Spindler <richard.spindler AT gmail.com>
+#  
+# This file is free software; as a special exception the author gives
+# unlimited permission to copy and/or distribute it, with or without 
+# modifications, as long as this notice is preserved.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
+# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+SUBDIRS = tinyxml timeline ProgressDialog sl LoadSaveManager ErrorDialog \
+          NodeEditor GmerlinEffects LiftGammaGain Frei0r ColorCurve \
+          RenderDialog
+
+EXTRA_DIST = nle.fl FilterItemWidget.fl SaveAsDialog.fl
+#AM_CPPFLAGS = -ggdb -Wall -Werror @CPPFLAGS@ -I$(top_srcdir)/icons -I$(top_srcdir)/src -I$(top_srcdir)/src/tinyxml -I$(top_srcdir)/src/sl
+AM_CPPFLAGS =  -D__STDC_CONSTANT_MACROS -ggdb -DINSTALL_PREFIX="\"$(prefix)\"" -I$(top_srcdir)/icons -I$(top_srcdir)/src -I$(top_srcdir)/src/tinyxml -I$(top_srcdir)/src/sl @CPPFLAGS@
+
+bin_PROGRAMS = openmovieeditor
+openmovieeditor_LDADD = tinyxml/libtinyxml.a timeline/libtimeline.a\
+	ProgressDialog/libProgressDialog.a\
+	sl/libsl.a\
+	LoadSaveManager/libLoadSaveManager.a\
+	ErrorDialog/libErrorDialog.a\
+	NodeEditor/libNodeEditor.a\
+	GmerlinEffects/libGmerlinEffects.a\
+	LiftGammaGain/libLiftGammaGain.a\
+	Frei0r/libFrei0r.a\
+	ColorCurve/libColorCurve.a\
+	RenderDialog/libRenderDialog.a\
+	@PORTAUDIO19_LIBS@\
+	@SAMPLERATE_LIBS@\
+	@SNDFILE_LIBS@\
+	@GAVL_LIBS@\
+	@GMERLIN_AVDEC_LIBS@\
+	@GMERLIN_LIBS@\
+	@LIBQUICKTIME_LIBS@\
+	@GLIB2_LIBS@\
+	@FLTK_LIBS@\
+	@JACK_LIBS@
+
+openmovieeditor_SOURCES = nle.cxx\
+	helper.cxx\
+	Timeline.cxx\
+	VideoTrack.cxx\
+	nle_main.cxx\
+	SwitchBoard.cxx\
+	WavArtist.cxx\
+	TimelineView.cxx\
+	VideoClip.cxx\
+	VideoViewGL.cxx\
+	FilmStrip.cxx\
+	Ruler.cxx\
+	Rect.cxx\
+	Prefs.cxx\
+	MoveDragHandler.cxx\
+	TrimDragHandler.cxx\
+	TrackBase.cxx\
+	AudioTrack.cxx\
+	AudioClip.cxx\
+	AudioFileSnd.cxx\
+	PortAudio19PlaybackCore.cxx\
+	PortAudio19PlaybackCore.H\
+	JackPlaybackCore.cxx\
+	JackPlaybackCore.H\
+	Renderer.cxx\
+	Flmm_Scalebar.cxx\
+	SaveAsDialog.cxx\
+	strlcpy.c\
+	strlcpy.h\
+	FilmStrip.H\
+	IVideoFile.H\
+	VideoClip.H\
+	AudioClip.H\
+	Flmm_Scalebar.H\
+	IVideoReader.H\
+	Renderer.H\
+	IVideoWriter.H\
+	Ruler.H\
+	VideoTrack.H\
+	AudioFileSnd.H\
+	global_includes.H\
+	MoveDragHandler.H\
+	SaveAsDialog.H\
+	VideoViewGL.H\
+	AudioTrack.H\
+	globals.H\
+	nle.h\
+	SwitchBoard.H\
+	WavArtist.H\
+	helper.H\
+	Timeline.H\
+	DragHandler.H\
+	IAudioFile.H\
+	Prefs.H\
+	TimelineView.H\
+	IAudioReader.H\
+	TrackBase.H\
+	Rect.H\
+	TrimDragHandler.H\
+	IClipArtist.H\
+	AudioClipArtist.H\
+	AudioClipArtist.cxx\
+	VideoClipArtist.H\
+	VideoClipArtist.cxx\
+	render_helper.cxx\
+	render_helper.H\
+	ImageClipArtist.H\
+	ImageClipArtist.cxx\
+	VideoFileFactory.cxx\
+	VideoFileFactory.H\
+	FilmStripFactory.H\
+	FilmStripFactory.cxx\
+	AudioFileFactory.cxx\
+	AudioFileFactory.H\
+	WaveForm.H\
+	WaveForm.cxx\
+	TimelineScroll.H\
+	TimelineScroll.cxx\
+	DocManager.cxx\
+	DocManager.H\
+	Command.H\
+	Command.cxx\
+	MoveCommand.cxx\
+	MoveCommand.H\
+	RemoveCommand.cxx\
+	RemoveCommand.H\
+	TrimCommand.cxx\
+	TrimCommand.H\
+	AddCommand.cxx\
+	AddCommand.H\
+	SplitCommand.cxx\
+	SplitCommand.H\
+	RemoveTrackCommand.H\
+	RemoveTrackCommand.cxx\
+	AddTrackCommand.H\
+	AddTrackCommand.cxx\
+	Commands.H\
+	DiskCache.H\
+	DiskCache.cxx\
+	SelectDragHandler.H\
+	SelectDragHandler.cxx\
+	MoveSelectionCommand.H\
+	MoveSelectionCommand.cxx\
+	MediaPanel.cxx\
+	MediaPanel.H\
+	FolderBrowser.H\
+	FolderBrowser.cxx\
+	MediaBrowser.cxx\
+	MediaBrowser.H\
+	VideoThumbnails.H\
+	VideoThumbnails.cxx\
+	Resampler.cxx\
+	Resampler.H\
+	CompositeCommand.cxx\
+	CompositeCommand.H\
+	RemoveSelectionCommand.cxx\
+	RemoveSelectionCommand.H\
+	DummyClip.H\
+	DummyClip.cxx\
+	DummyClipArtist.H\
+	DummyClipArtist.cxx\
+	IEffectMenu.H\
+	FltkEffectMenu.H\
+	FltkEffectMenu.cxx\
+	VideoEffectClip.cxx\
+	VideoEffectClip.H\
+	IVideoEffect.H\
+	frei0r.h\
+	IPlaybackCore.cxx\
+	IPlaybackCore.H\
+	PasteSelectionCommand.cxx\
+	PasteSelectionCommand.H\
+	PasteCommand.cxx\
+	PasteCommand.H\
+	SpecialClipsBrowser.H\
+	SpecialClipsBrowser.cxx\
+	TitleClip.cxx\
+	TitleClip.H\
+	Fl_Split.cpp\
+	Fl_Split.h\
+	fl_font_browser.cpp\
+	fl_font_browser.h\
+	IEffectDialog.H\
+	FilterBase.H\
+	FilterBase.cxx\
+	FilterFactory.H\
+	IAudioFilter.H\
+	AudioVolumeFilter.cxx\
+	AudioVolumeFilter.H\
+	AudioVolumeFilterFactory.cxx\
+	AudioVolumeFilterFactory.H\
+	AutomationDragHandler.H\
+	AutomationDragHandler.cxx\
+	FilterClip.cxx\
+	FilterClip.H\
+	MainFilterFactory.cxx\
+	MainFilterFactory.H\
+	FilterAddCommand.H\
+	FilterAddCommand.cxx\
+	FilterRemoveCommand.H\
+	FilterRemoveCommand.cxx\
+	timebase.H\
+	int_float_scale.H\
+	IVideoFileWriter.H\
+	AutoTrack.H\
+	AutoTrack.cxx\
+	AutoDragHandler.H\
+	AutoDragHandler.cxx\
+	lqt_bitrate_params.h\
+	XmlClipData.H\
+	XmlClipData.cxx\
+	color_schemes.cxx\
+	color_schemes.H\
+	AudioThreadedRingbuffer.H\
+	AudioThreadedRingbuffer.cxx\
+	lqtgavl.h\
+	lqtgavl.c\
+	LazyFrame.H\
+	LazyFrame.cxx\
+	ImageClip.cxx\
+	ImageClip.H\
+	InkscapeClip.cxx\
+	InkscapeClip.H\
+	Flmm_Cursor_Shape.cxx\
+	Flmm_Cursor_Shape.H\
+	FilterScroll.H\
+	FilterScroll.cxx\
+	FilterItemWidget.H\
+	FilterItemWidget.cxx\
+	IEffectWidget.H\
+	EffectDialogButtonWidget.H\
+	EffectDialogButtonWidget.cxx\
+	DragBox.H\
+	DragBox.cxx\
+	AudioFileGmerlin.H\
+	AudioFileGmerlin.cxx\
+	VideoFileGmerlin.H\
+	VideoFileGmerlin.cxx\
+	fps_helper.H\
+	VideoFileProject.H\
+	VideoFileProject.cxx\
+	AudioFileProject.H\
+	AudioFileProject.cxx\
+	fps_definitions.H\
+	fps_definitions.cxx\
+	fltk_layout_persistance.H\
+	fltk_layout_persistance.cxx\
+	JobManager.cxx\
+	JobManager.H
+
+
+

@@ -1,0 +1,31 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.H} 
+code_name {.cxx}
+widget_class FilterItemWidget {open selected
+  xywh {989 341 430 20} type Double resizable visible
+} {
+  Fl_Button {} {
+    label {@2>}
+    xywh {0 0 20 20}
+  }
+  Fl_Check_Button {} {
+    xywh {20 0 20 20} down_box DOWN_BOX value 1
+  }
+  Fl_Box {} {
+    label {Filter Name}
+    xywh {40 0 330 20} labelsize 12 align 20 resizable
+  }
+  Fl_Button {} {
+    label {@2>}
+    xywh {370 0 20 20}
+  }
+  Fl_Button {} {
+    label {@8>}
+    xywh {390 0 20 20}
+  }
+  Fl_Button {} {
+    label {@-11+}
+    xywh {410 0 20 20}
+  }
+} 

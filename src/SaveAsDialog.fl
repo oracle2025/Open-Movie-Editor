@@ -1,0 +1,56 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0106 
+header_name {.H} 
+code_name {.cxx}
+class SaveAsDialog {open
+} {
+  Function {SaveAsDialog()} {open
+  } {
+    Fl_Window saveAsDialog {
+      label {Save as Dialog} open
+      xywh {499 305 335 135} type Double modal visible
+    } {
+      Fl_Box {} {
+        label {Save Project as}
+        xywh {0 0 335 40} labelfont 1 labelsize 16
+      }
+      Fl_Input project_name {
+        label {Project Name}
+        private xywh {110 55 215 25}
+      }
+      Fl_Return_Button {} {
+        label Ok
+        callback {m_ok = true;
+o->window()->hide();}
+        xywh {175 100 150 25} hotspot
+      }
+      Fl_Button {} {
+        label Cancel
+        callback {o->window()->hide();}
+        xywh {10 100 150 25}
+      }
+    }
+    code {m_ok = false;
+project_name->value( "New Projectname" );} {}
+  }
+  Function {show()} {} {
+    code {saveAsDialog->show();} {}
+  }
+  Function {shown()} {return_type int
+  } {
+    code {return saveAsDialog->shown();} {}
+  }
+  decl {bool m_ok;} {}
+  Function {ok()} {return_type bool
+  } {
+    code {return m_ok;} {}
+  }
+  Function {projectName()} {return_type {const char*}
+  } {
+    code {return project_name->value();} {}
+  }
+  Function {~SaveAsDialog()} {} {
+    code {delete saveAsDialog;} {selected
+    }
+  }
+} 

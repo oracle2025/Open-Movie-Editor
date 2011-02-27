@@ -1,0 +1,74 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+class ProgressDialog {open : {public nle::IProgressListener}
+} {
+  Function {ProgressDialog( const char* title )} {open
+  } {
+    Fl_Window progressDialog {
+      label {Progress Dialog} open
+      private xywh {653 285 335 145} type Double
+      code0 {\#include "IProgressListener.H"}
+      code1 {\#include <time.h>}
+      code2 {\#include <sys/time.h>}
+      code3 {\#include "../helper.H"} modal visible
+    } {
+      Fl_Button cancel_button {
+        label Cancel
+        callback {cancel = true;
+cancel_button->deactivate();}
+        private xywh {240 115 90 25} hotspot
+        code0 {\#include <stdio.h>}
+      }
+      Fl_Progress progress_bar {
+        private xywh {40 75 255 25} selection_color 5
+      }
+      Fl_Box title_box {
+        label {Loading Project...}
+        private xywh {0 5 335 30} labelfont 1 labelsize 16
+      }
+      Fl_Output time_display {selected
+        private xywh {10 40 315 25} box FLAT_BOX color 49 textsize 11
+      }
+    }
+    code {progress_bar->minimum( 0.0 );
+progress_bar->maximum( 1.0 );
+progress_bar->value( 0.0 );
+title_box->label( title );} {}
+  }
+  Function {~ProgressDialog()} {} {
+    code {delete progressDialog;} {}
+  }
+  Function {progress( double percent )} {open return_type bool
+  } {
+    code {timeval now;
+gettimeofday( &now, 0 );
+double elapsed = (now.tv_sec - m_start.tv_sec) + ( (now.tv_usec - m_start.tv_usec) * (1.0 / CLOCKS_PER_SEC) );
+double remaining = elapsed / progress_bar->value() - elapsed + 1.0f;
+int es, em, eh, rs, rm, rh;
+
+nle::secs2HMS( elapsed, eh, em, es );
+nle::secs2HMS( remaining, rh, rm, rs );
+
+char buf[128];
+sprintf( buf, "Elapsed Time: %03d:%02d:%02d Remaining Time: %03d:%02d:%02d", eh, em, es, rh, rm, rs );
+
+progress_bar->value( percent );
+time_display->value( buf );
+Fl::check();
+return cancel;} {}
+  }
+  Function {start()} {open return_type void
+  } {
+    code {cancel = false;
+progressDialog->show();
+gettimeofday( &m_start, 0 );} {}
+  }
+  Function {end()} {open return_type void
+  } {
+    code {progressDialog->hide();} {}
+  }
+  decl {bool cancel;} {}
+  decl {timeval m_start;} {}
+} 

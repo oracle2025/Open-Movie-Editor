@@ -1,0 +1,51 @@
+The Open Movie Editor
+
+
+... is a Non Linear Movie Editor, it is in its very early stages of development.
+
+http://openmovieeditor.sourceforge.net/
+
+-Richard Spindler <richard.spindler AT gmail.com>
+
+
+Deps:
+
+fltk
+libquicktime
+gavl (gmerlin audio video library)
+libsndfile
+ffmpeg (optional but recommended)
+jack audio connection kit
+libmpeg3
+libsamplerate
+portaudio (v19)
+
+Installation Hints for Dependencies:
+
+ffmpeg:
+ be sure to set at least the following switches at ./configure time:
+ ./configure --enable-gpl --enable-shared
+ Also check the messages, and make sure that all the codecs that need other
+ dependencies are included, and if neccessary enable the appropriate switches
+ mentioned in ./configure --help
+
+libquicktime:
+ When compiling libquicktime from source make sure that all the fancy codecs are
+ enabled in the ./configure script. If some are missing, be sure to install the
+ required dependency.
+
+libsndfile:
+ There is a yet to be merged variant of libsndfile that supports ogg files. Its
+ at http://www.metadecks.org/software/libsndfile/ . However, I do not use it
+ because ffmpeg does ogg as well.
+
+
+CREDITS:
+
+One Icon from http://tango.freedesktop.org/ is used in the error dialog, which
+is licensed under the "Creative Commons Attribution Share-Alike license"
+http://creativecommons.org/licenses/by-sa/2.5/
+
+The Icon for Missing Clips is from Tango
+
+The Icon for Frei0r is From gephex

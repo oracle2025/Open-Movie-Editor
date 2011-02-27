@@ -1,0 +1,1012 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.H} 
+code_name {.cxx}
+decl {\#include "VideoWriterQT.H"} {global
+} 
+
+decl {\#include "EncodingPreset.H"} {global
+} 
+
+decl {\#include "helper.H"} {global
+} 
+
+decl {\#include <tinyxml.h>} {} 
+
+class RenderDialog {open
+} {
+  Function {RenderDialog()} {open
+  } {
+    Fl_Window dialog_window {
+      label Export open
+      xywh {623 246 560 405} type Double resizable
+      code0 {\#include "VideoWriterQT.H"}
+      code1 {\#include <colormodels.h>} modal visible
+    } {
+      Fl_Box {} {
+        label Export
+        xywh {0 0 560 40} labelfont 1 labelsize 16
+      }
+      Fl_File_Input export_filename {
+        label Filename
+        xywh {165 45 205 35}
+      }
+      Fl_Button {} {
+        label {File...}
+        callback {export_filename->value( fl_file_chooser( "Set Export Filename", 0, 0 ) );}
+        xywh {375 55 75 25}
+        code0 {\#include <stdlib.h>}
+        code1 {\#include <FL/Fl_File_Chooser.H>}
+      }
+      Fl_Return_Button {} {
+        label Encode
+        callback {if ( strcmp( "", export_filename->value() ) == 0 ) {
+	fl_alert( "Please select a filename." );
+	return;
+}
+
+
+
+
+if ( presets_browser->value() == 0 ) {
+	fl_alert( "Please select a Format Preset." );
+	return;
+}
+
+
+
+nle::EncodingPreset* preset = (nle::EncodingPreset*)presets_browser->data(presets_browser->value());
+
+\#if (LQT_CODEC_API_VERSION & 0xffff) > 6
+char buffer[FL_PATH_MAX];
+strncpy( buffer, export_filename->value(), FL_PATH_MAX );
+buffer[FL_PATH_MAX-1] = '\\0';
+switch ( preset->m_file_type ) {
+	case LQT_FILE_QT:
+		fl_filename_setext( buffer, ".mov" );
+		break;
+	case LQT_FILE_AVI_ODML:
+		fl_filename_setext( buffer, ".avi" );
+		break;
+	case LQT_FILE_MP4:
+		fl_filename_setext( buffer, ".mp4" );
+		break;
+	case LQT_FILE_3GP:
+		fl_filename_setext( buffer, ".3gp" );
+		break;
+}
+export_filename->value( buffer );
+\#endif
+
+struct stat statbuf;
+int r = stat( export_filename->value(), &statbuf );
+if ( r == 0 ) {
+	r = fl_choice( "File exists, replace?\\nWill be overwritten.", "&Cancel", "&Replace", 0 );
+	if ( r == 0 ) {
+		return;
+	}
+}
+
+
+go = true;
+o->window()->hide();}
+        xywh {290 365 245 25} hotspot
+        code0 {\#include <sys/types.h>}
+        code1 {\#include <sys/stat.h>}
+        code2 {\#include <unistd.h>}
+      }
+      Fl_Button {} {
+        label Cancel
+        callback {go = false;
+o->window()->hide();}
+        xywh {30 365 245 25}
+      }
+      Fl_Group {} {
+        label Video open
+        xywh {30 100 505 255} box ENGRAVED_FRAME labelfont 1 align 5 resizable
+      } {
+        Fl_Group {} {open
+          xywh {40 125 485 220} resizable
+        } {
+          Fl_Text_Display information_display {
+            label Information
+            xywh {285 125 240 220} labelfont 1 align 5
+          }
+          Fl_Group {} {open
+            xywh {40 125 240 220}
+          } {
+            Fl_Browser presets_browser {
+              label Presets
+              callback {if ( o->value() > 0 ) {
+	information_display->buffer()->text(o->text(o->value()));
+	nle::EncodingPreset* preset = (nle::EncodingPreset*)presets_browser->data(presets_browser->value());
+	char buffer[256];
+	if (preset) {
+		nle::video_format fmt;
+		preset->getFormat(&fmt);
+		snprintf( buffer, 256, "\\n%dx%d, %.4f, %.2f fps\\n", fmt.w, fmt.h, fmt.pixel_aspect_ratio, ((float)fmt.framerate.timescale/fmt.framerate.frame_duration) );
+		information_display->buffer()->append(buffer);
+		snprintf(buffer, 256, "Video: %s\\nAudio: %s, %d\\n", fmt.video_codec, fmt.audio_codec, fmt.samplerate );
+		information_display->buffer()->append(buffer);
+		switch (fmt.interlacing) {
+			case 1:
+				information_display->buffer()->append("Top field first");
+				break;
+			case 2:
+				information_display->buffer()->append("Bottom field first");
+				break;
+		}
+		if ( preset->m_readonly ) {
+			remove_format_button->deactivate();
+			edit_format_button->deactivate();
+		} else {
+			remove_format_button->activate();
+			edit_format_button->activate();
+		}
+	} else {
+		remove_format_button->deactivate();
+		edit_format_button->deactivate();
+	} 
+	
+} else {
+	remove_format_button->deactivate();
+	edit_format_button->deactivate();
+}}
+              xywh {40 125 240 195} labelfont 1 align 5 resizable
+              code0 {\#include <FL/Fl_Hold_Browser.H>}
+              class Fl_Hold_Browser
+            }
+            Fl_Group {} {open
+              xywh {40 320 240 25}
+            } {
+              Fl_Button {} {
+                label {+}
+                callback {CustomFormatDialog dlg;
+dlg.show();
+while (dlg.shown())
+  Fl::wait();
+  
+nle::EncodingPreset* preset = dlg.getEncodingPreset();
+
+
+if ( preset ) {
+	nle::video_format fmt;
+	preset->getFormat(&fmt);
+	presets_browser->add(fmt.name, preset);
+}}
+                xywh {65 320 25 25} labelfont 1 labelsize 16
+              }
+              Fl_Button edit_format_button {
+                label {Edit...}
+                callback {CustomFormatDialog dlg;
+
+nle::EncodingPreset* preset = (nle::EncodingPreset*)presets_browser->data(presets_browser->value());
+
+dlg.setEncodingPreset(preset);
+if ( !preset ) {
+	return;
+}
+
+dlg.show();
+while (dlg.shown())
+  Fl::wait();
+
+
+nle::EncodingPreset* preset_new = dlg.getEncodingPreset();
+
+
+if ( preset_new ) {
+	nle::video_format fmt;
+	preset_new->getFormat(&fmt);
+	delete preset;
+	
+	presets_browser->data(presets_browser->value(), preset_new);
+	presets_browser->text(presets_browser->value(), fmt.name);
+	
+	
+	char buffer[256];
+	information_display->buffer()->text(fmt.name);
+	snprintf( buffer, 256, "\\n%dx%d, %.4f, %.2f fps\\n", fmt.w, fmt.h, fmt.pixel_aspect_ratio, ((float)fmt.framerate.timescale/fmt.framerate.frame_duration) );
+	information_display->buffer()->append(buffer);
+	snprintf(buffer, 256, "Video: %s\\nAudio: %s, %d\\n", fmt.video_codec, fmt.audio_codec, fmt.samplerate );
+	information_display->buffer()->append(buffer);
+	switch (fmt.interlacing) {
+		case 1:
+			information_display->buffer()->append("Top field first");
+			break;
+		case 2:
+			information_display->buffer()->append("Bottom field first");
+			break;
+	}
+}}
+                xywh {90 320 190 25} deactivate resizable
+              }
+              Fl_Button remove_format_button {
+                label {-}
+                callback {if ( presets_browser->value() > 3 ) {
+	void* data = presets_browser->data(presets_browser->value());
+	if ( data ) {
+		nle::EncodingPreset* preset = (nle::EncodingPreset*)data;
+		delete preset;
+		presets_browser->remove( presets_browser->value() );
+	}
+}}
+                xywh {40 320 25 25} labelfont 1 labelsize 16 deactivate
+              }
+            }
+          }
+        }
+      }
+    }
+    code {go = false;
+information_display->buffer(new Fl_Text_Buffer);
+
+
+nle::EncodingPreset* encoding_preset = new nle::EncodingPreset();
+nle::video_format format;
+
+
+
+
+encoding_preset->m_readonly = true;
+format.w = 768;
+format.h = 576;
+format.pixel_aspect_ratio = 1.0;
+format.interlacing = 0;
+strcpy(format.name, "Quicktime 7");
+strcpy(format.audio_codec, "faac" );
+strcpy(format.video_codec, "ffmpeg_mpg4" );
+format.framerate.frame_duration = 1200;
+format.framerate.timescale = 30000;
+format.framerate.audio_frames_per_chunk = 19200;
+format.framerate.video_frames_per_chunk = 10;
+
+encoding_preset->setFormat(&format);
+lqt_codec_info_t** vcodec = lqt_find_video_codec_by_name( "ffmpeg_mpg4" );
+lqt_codec_info_t** acodec = lqt_find_audio_codec_by_name("faac");
+
+if ( vcodec && acodec && vcodec[0] && acodec[0] ) {
+	encoding_preset->setVideoCodec( vcodec[0] );
+	encoding_preset->setAudioCodec( acodec[0] );
+	presets_browser->add(format.name, encoding_preset);
+} else {
+	delete encoding_preset;
+	if ( !vcodec || !vcodec[0] ) {
+		cout << "Video Codec Missing: ffmpeg_mpg4, Hint: install ffmpeg with shared libs before installing libquicktime" << endl;
+	}
+	if ( !acodec || !acodec[0] ) {
+		cout << "Audio Codec Missing: faac, Hint: install libfaac before installing libquicktime" << endl;
+	}
+}
+lqt_destroy_codec_info( vcodec );
+lqt_destroy_codec_info( acodec );
+
+/*-----*/
+
+encoding_preset = new nle::EncodingPreset();
+encoding_preset->getFormat(&format);
+
+encoding_preset->m_readonly = true;
+encoding_preset->m_avi_odml = true;
+format.w = 768;
+format.h = 576;
+format.pixel_aspect_ratio = 1.0;
+format.interlacing = 0;
+strcpy(format.name, "MSMpeg 4v3, mp3 AVI (768x576)");
+strcpy(format.audio_codec, "lame" );
+strcpy(format.video_codec, "ffmpeg_msmpeg4v3" );
+format.framerate.frame_duration = 1200;
+format.framerate.timescale = 30000;
+format.framerate.audio_frames_per_chunk = 19200;
+format.framerate.video_frames_per_chunk = 10;
+
+encoding_preset->setFormat(&format);
+
+vcodec = lqt_find_video_codec_by_name( "ffmpeg_msmpeg4v3" );
+acodec = lqt_find_audio_codec_by_name("lame");
+
+if ( vcodec && acodec && vcodec[0] && acodec[0] ) {
+	encoding_preset->setVideoCodec( vcodec[0] );
+	encoding_preset->setAudioCodec( acodec[0] );
+	presets_browser->add(format.name, encoding_preset);
+} else {
+	delete encoding_preset;
+	if ( !vcodec || !vcodec[0] ) {
+		cout << "Video Codec Missing: ffmpeg_msmpeg4v3, Hint: install ffmpeg with shared libs before installing libquicktime" << endl;
+	}
+	if ( !acodec || !acodec[0] ) {
+		cout << "Audio Codec Missing: lame, Hint: install lame before installing libquicktime" << endl;
+	}
+}
+lqt_destroy_codec_info( vcodec );
+lqt_destroy_codec_info( acodec );
+
+
+encoding_preset = new nle::EncodingPreset();
+encoding_preset->getFormat(&format);
+
+encoding_preset->m_readonly = true;
+format.w = 720;
+format.h = 576;
+format.pixel_aspect_ratio = 1.094;
+format.interlacing = 2;
+strcpy(format.name, "Quicktime DV");
+strcpy(format.video_codec, "dv_pal" );
+strcpy(format.audio_codec, "twos" );
+format.framerate.frame_duration = 1200;
+format.framerate.timescale = 30000;
+format.framerate.audio_frames_per_chunk = 19200;
+format.framerate.video_frames_per_chunk = 10;
+encoding_preset->setFormat(&format);
+vcodec = lqt_find_video_codec_by_name( "dv_pal" );
+
+acodec = lqt_find_audio_codec_by_name( "twos" );
+
+if ( vcodec && acodec && vcodec[0] && acodec[0] ) {
+	encoding_preset->setVideoCodec( vcodec[0] );
+	encoding_preset->setAudioCodec( acodec[0] );
+	presets_browser->add(format.name, encoding_preset);
+} else {
+	delete encoding_preset;
+	if ( !vcodec || !vcodec[0] ) {
+		cout << "Video Codec Missing: DV, Hint: install libdv before installing libquicktime" << endl;
+	}
+}
+lqt_destroy_codec_info( vcodec );
+lqt_destroy_codec_info( acodec );
+
+
+
+
+/*presets_browser->add("Quicktime DV (PAL)");
+presets_browser->add("MSMpeg 4v3, mp3 AVI (768x576)");
+presets_browser->add("Quicktime 7");*/
+
+//Load Presets XML
+string presets_filename = "";
+presets_filename += getenv("HOME");
+presets_filename += ("/.openme.presets");
+TiXmlDocument doc( presets_filename.c_str() );
+if ( !doc.LoadFile() ) {
+	return;
+}
+TiXmlHandle docH( &doc );
+
+TiXmlElement* preset = docH.FirstChild( "preset" ).Element();
+
+for ( ; preset; preset = preset->NextSiblingElement( "preset" ) ) {
+	nle::EncodingPreset* encoding_preset = new nle::EncodingPreset();
+	encoding_preset->readXML(preset);
+	nle::video_format fmt;
+	encoding_preset->getFormat(&fmt);
+	presets_browser->add(fmt.name, encoding_preset);
+}
+
+TiXmlText* text = docH.FirstChildElement( "lastRenderFilename" ).Child( 0 ).Text();
+if ( text ) {
+	export_filename->value( text->Value() );
+}
+
+//export_filename->value( nle::g_preferences->lastRenderFilename().c_str() );} {}
+  }
+  Function {getFileWriter()} {open return_type {nle::IVideoFileWriter*}
+  } {
+    code {if ( !go ) {
+	return 0;
+}
+
+if (presets_browser->value()==0) {
+	return 0;
+}
+
+nle::EncodingPreset* preset = (nle::EncodingPreset*)presets_browser->data(presets_browser->value());
+
+return preset->getFileWriter( export_filename->value() );} {}
+  }
+  decl {bool go;} {public
+  }
+  Function {~RenderDialog()} {open
+  } {
+    code {int s = presets_browser->size();
+void* data;
+nle::EncodingPreset* preset;
+
+string presets_filename = "";
+presets_filename += getenv("HOME");
+presets_filename += ("/.openme.presets");
+TiXmlDocument doc( presets_filename.c_str() );
+TiXmlDeclaration *dec = new TiXmlDeclaration( "1.0", "", "no" );
+doc.LinkEndChild( dec );
+TiXmlElement *item = new TiXmlElement( "version" );
+doc.LinkEndChild( item );
+//TiXmlText* text = new TiXmlText( VERSION );
+//item->LinkEndChild( text );
+
+
+for ( int i = 1; i <= s; i++ ) {
+	data = presets_browser->data(i);
+	if ( data ) {
+		preset = (nle::EncodingPreset*)data;
+		if ( preset->m_readonly ) {
+			delete preset;
+			continue;
+		}
+		nle::video_format fmt;
+		preset->getFormat(&fmt);
+		
+		TiXmlElement* preset_xml = new TiXmlElement( "preset" );
+		doc.LinkEndChild( preset_xml );
+		preset->writeXML( preset_xml );
+		
+		delete preset;
+	}
+}
+
+item = new TiXmlElement( "lastRenderFilename" );
+doc.LinkEndChild( item );
+TiXmlText* text = new TiXmlText( export_filename->value() );
+item->LinkEndChild( text );
+
+doc.SaveFile();
+delete dialog_window;} {}
+  }
+  Function {shown()} {open return_type int
+  } {
+    code {return dialog_window->shown();} {}
+  }
+  Function {show()} {} {
+    code {dialog_window->show();} {}
+  }
+} 
+
+class CustomFormatDialog {open
+} {
+  decl {void *audio_codec;} {}
+  decl {void* video_codec;} {}
+  decl {nle::EncodingPreset* m_preset;} {}
+  Function {CustomFormatDialog()} {open
+  } {
+    code {audio_codec = 0;
+video_codec = 0;
+m_preset = new nle::EncodingPreset();} {}
+    Fl_Window dialog_window {
+      label {Custom Video Format} open
+      xywh {576 312 690 405} type Double modal visible
+    } {
+      Fl_Box {} {
+        xywh {350 110 330 260} box ENGRAVED_FRAME labelfont 1 align 5
+      }
+      Fl_Box {} {
+        label {Custom Video Format}
+        xywh {0 0 690 45} labelfont 1 labelsize 16
+      }
+      Fl_Choice video_codec_menu {
+        label {Video Codec}
+        callback {video_codec = o->menu()[o->value()].user_data();
+m_preset->setVideoCodec( (lqt_codec_info_t*)video_codec );
+video_bitrate->value( m_preset->bitrate() );
+if ( video_bitrate->value() < 0 ) {
+	video_bitrate->deactivate();
+} else {
+	video_bitrate->activate();
+}} open
+        xywh {125 120 205 25} down_box BORDER_BOX
+      } {}
+      Fl_Button video_options {
+        label {Options...}
+        callback {if ( video_codec ) {
+	Fl_Group::current( dialog_window );
+	CodecOptions dlg;
+	dlg.m_audio = false;
+	dlg.m_preset = m_preset;
+	nle::setCodecInfo( &dlg, video_codec );
+	dlg.codecOptions->show();
+	while (dlg.codecOptions->shown())
+		Fl::wait();
+	video_bitrate->value( m_preset->bitrate() );
+}}
+        private xywh {255 150 75 25}
+      }
+      Fl_Choice audio_codec_menu {
+        label {Audio Codec}
+        callback {audio_codec = o->menu()[o->value()].user_data();
+m_preset->setAudioCodec( (lqt_codec_info_t*)audio_codec );
+audio_bitrate->value( m_preset->audiobitrate() );
+if ( audio_bitrate->value() < 0 ) {
+	audio_bitrate->deactivate();
+} else {
+	audio_bitrate->activate();
+}} open
+        xywh {125 245 205 25} down_box BORDER_BOX
+        code1 {\#include <iostream>}
+        code2 {using namespace std;}
+      } {}
+      Fl_Button audio_options {
+        label {Options...}
+        callback {if ( audio_codec ) {
+	Fl_Group::current( dialog_window );
+	CodecOptions dlg;
+	dlg.m_audio = true;
+	dlg.m_preset = m_preset;
+	nle::setCodecInfo( &dlg, audio_codec );
+	dlg.codecOptions->show();
+	while (dlg.codecOptions->shown())
+		Fl::wait();
+	audio_bitrate->value( m_preset->audiobitrate() );
+}}
+        private xywh {255 275 75 25}
+      }
+      Fl_Choice samplerate {
+        label Samplerate open
+        xywh {125 305 205 25} down_box BORDER_BOX
+      } {
+        MenuItem {} {
+          label 48000
+          xywh {15 15 100 20}
+        }
+      }
+      Fl_Input name {
+        label {Preset Name}
+        xywh {495 120 150 25}
+      }
+      Fl_Button {} {
+        label {@-3<-}
+        tooltip Generate xywh {645 120 25 25}
+      }
+      Fl_Choice frame_rate_choice {
+        label Framerate open
+        xywh {495 150 175 25} down_box BORDER_BOX
+      } {
+        MenuItem {} {
+          label {25 (PAL)}
+          user_data {&fps25x48000}
+          xywh {25 25 100 20}
+        }
+        MenuItem {} {
+          label {29.97 (NTSC)}
+          user_data {&fps29_97x48000}
+          xywh {20 20 100 20}
+        }
+        MenuItem {} {
+          label 24
+          user_data {&fps24x48000}
+          xywh {20 20 100 20}
+        }
+        MenuItem {} {
+          label 15
+          user_data {&fps15x48000}
+          xywh {20 20 100 20}
+        }
+        MenuItem {} {
+          label 50
+          user_data {&fps50x48000}
+          xywh {20 20 100 20}
+        }
+        MenuItem {} {
+          label 60
+          user_data {&fps60x48000}
+          xywh {20 20 100 20}
+        }
+      }
+      Fl_Spinner frame_size_w {
+        label Framesize
+        xywh {495 180 85 25} value 1
+      }
+      Fl_Spinner frame_size_h {
+        xywh {585 180 85 25} value 1
+      }
+      Fl_Box {} {
+        label Video
+        xywh {10 110 330 105} box ENGRAVED_FRAME labelfont 1 align 5
+      }
+      Fl_Choice interlacing {
+        label Interlacing open
+        xywh {495 210 175 25} down_box BORDER_BOX
+      } {
+        MenuItem {} {
+          label None
+          xywh {10 10 100 20}
+        }
+        MenuItem {} {
+          label {Top field first}
+          xywh {10 10 100 20}
+        }
+        MenuItem {} {
+          label {bottom field first}
+          xywh {10 10 100 20}
+        }
+      }
+      Fl_Return_Button {} {
+        label {Save Custom Format}
+        callback {go = true;
+o->window()->hide();}
+        xywh {350 375 330 25}
+      }
+      Fl_Box {} {
+        label Audio
+        xywh {10 235 330 135} box ENGRAVED_FRAME labelfont 1 align 5
+      }
+      Fl_Check_Button {} {
+        label {Render Video}
+        xywh {20 150 235 25} down_box DOWN_BOX value 1 deactivate
+      }
+      Fl_Check_Button {} {
+        label {Render Audio}
+        xywh {20 275 230 25} down_box DOWN_BOX value 1 deactivate
+      }
+      Fl_Button {} {
+        label Cancel
+        callback {o->window()->hide();}
+        xywh {10 375 330 25}
+      }
+      Fl_Input_Choice pixel_aspect_ratio {
+        label {Pixel Aspect Ratio} open
+        xywh {495 240 175 25}
+      } {
+        MenuItem {} {
+          label 1
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label {0.9117 (NTSC)}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label {1.21557 (NTSC 16:9)}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label {1.094 (PAL)}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label {1.4587 (PAL 16:9)}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label {1.333 (HDV 1440x1080)}
+          xywh {0 0 100 20}
+        }
+      }
+      Fl_Value_Input video_bitrate {
+        label {Bitrate (kbps)}
+        callback {m_preset->bitrate( video_bitrate->value() );}
+        xywh {255 180 75 25} maximum 10000 step 1 value 8192
+      }
+      Fl_Value_Input audio_bitrate {
+        label {Bitrate (kbps)}
+        callback {m_preset->audiobitrate( audio_bitrate->value() );}
+        xywh {255 335 75 25} maximum 10000 step 1 value 128
+      }
+      Fl_Box {} {
+        label Container
+        xywh {10 45 670 45} box ENGRAVED_FRAME labelfont 1 align 5
+      }
+      Fl_Choice lqt_container_menu {
+        label {File Type} open
+        xywh {210 55 255 25} down_box BORDER_BOX labelfont 1
+      } {
+        MenuItem {} {
+          label {Quicktime (.mov)}
+          callback {nle::setAudioCodecMenu( audio_codec_menu, LQT_FILE_QT );
+nle::setVideoCodecMenu( video_codec_menu, LQT_FILE_QT );}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label AVI
+          callback {nle::setAudioCodecMenu( audio_codec_menu, LQT_FILE_AVI_ODML | LQT_FILE_AVI );
+nle::setVideoCodecMenu( video_codec_menu, LQT_FILE_AVI_ODML | LQT_FILE_AVI );} selected
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label MP4
+          callback {nle::setAudioCodecMenu( audio_codec_menu, LQT_FILE_MP4 );
+nle::setVideoCodecMenu( video_codec_menu, LQT_FILE_MP4 );}
+          xywh {0 0 100 20}
+        }
+        MenuItem {} {
+          label 3GP
+          callback {nle::setAudioCodecMenu( audio_codec_menu, LQT_FILE_3GP );
+nle::setVideoCodecMenu( video_codec_menu, LQT_FILE_3GP );}
+          xywh {0 0 100 20}
+        }
+      }
+    }
+    code {nle::setAudioCodecMenu( audio_codec_menu, LQT_FILE_QT );
+nle::setVideoCodecMenu( video_codec_menu, LQT_FILE_QT );
+go = false;
+frame_size_w->range(1,2048);
+frame_size_h->range(1,2048);
+frame_size_w->value(640);
+frame_size_h->value(480);
+video_codec_menu->value(0);
+audio_codec_menu->value(2);
+pixel_aspect_ratio->value("1");
+
+audio_codec = audio_codec_menu->menu()[audio_codec_menu->value()].user_data();
+m_preset->setAudioCodec( (lqt_codec_info_t*)audio_codec );
+
+video_codec = video_codec_menu->menu()[video_codec_menu->value()].user_data();
+m_preset->setVideoCodec( (lqt_codec_info_t*)video_codec );
+
+\#if (LQT_CODEC_API_VERSION & 0xffff) <= 6
+lqt_container_menu->hide();
+\#endif} {}
+  }
+  Function {shown()} {open return_type int
+  } {
+    code {return dialog_window->shown();} {}
+  }
+  Function {show()} {} {
+    code {dialog_window->show();} {}
+  }
+  Function {~CustomFormatDialog()} {open
+  } {
+    code {delete dialog_window;
+delete m_preset;} {}
+  }
+  Function {getEncodingPreset()} {open return_type {nle::EncodingPreset*}
+  } {
+    code {if ( !go ) {
+	return 0;
+}
+nle::video_format fmt;
+nle::EncodingPreset* preset = new nle::EncodingPreset( m_preset );
+preset->getFormat(&fmt);
+
+strcpy( fmt.name, name->value());
+
+
+lqt_codec_info_t* codec_info = (lqt_codec_info_t*)video_codec_menu->menu()[video_codec_menu->value()].user_data();
+strcpy( fmt.video_codec, codec_info->name );
+
+codec_info = (lqt_codec_info_t*)audio_codec_menu->menu()[audio_codec_menu->value()].user_data();
+strcpy( fmt.audio_codec, codec_info->name );
+
+
+
+fmt.w = (int)frame_size_w->value();
+fmt.h = (int)frame_size_h->value();
+fmt.interlacing = interlacing->value();
+fmt.samplerate = 48000;
+fmt.pixel_aspect_ratio = nle::string_to_pixel_aspect_ratio( pixel_aspect_ratio->value() );
+
+
+switch ( frame_rate_choice->value() ) {
+	case 0: // 25
+		fmt.framerate.frame_duration = 1200;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 19200;
+		fmt.framerate.video_frames_per_chunk = 10;
+		break;
+	case 1: //29.97
+		fmt.framerate.frame_duration = 1001;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 16016;
+		fmt.framerate.video_frames_per_chunk = 10;
+		break;
+	case 2: // 24
+		fmt.framerate.frame_duration = 1250;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 20000;
+		fmt.framerate.video_frames_per_chunk = 10;
+		break;
+	case 3: // 15
+		fmt.framerate.frame_duration = 2000;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 32000;
+		fmt.framerate.video_frames_per_chunk = 10;
+		break;
+	case 4: //50
+		fmt.framerate.frame_duration = 600;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 19200;
+		fmt.framerate.video_frames_per_chunk = 20;
+		break;
+	case 5: // 60
+		fmt.framerate.frame_duration = 500;
+		fmt.framerate.timescale = 30000;
+		fmt.framerate.audio_frames_per_chunk = 16000;
+		fmt.framerate.video_frames_per_chunk = 20;
+		break;
+}
+
+preset->setFormat(&fmt);
+\#if (LQT_CODEC_API_VERSION & 0xffff) > 6
+switch ( lqt_container_menu->value() ) {
+	case 0:
+		preset->m_file_type = LQT_FILE_QT;
+		break;
+	case 1:
+		preset->m_file_type = LQT_FILE_AVI_ODML;
+		break;
+	case 2:
+		preset->m_file_type = LQT_FILE_MP4;
+		break;
+	case 3:
+		preset->m_file_type = LQT_FILE_3GP;
+		break;
+	
+}
+\#endif
+return preset;} {}
+  }
+  decl {bool go;} {}
+  Function {setEncodingPreset(nle::EncodingPreset* preset)} {open
+  } {
+    code {nle::video_format fmt;
+preset->getFormat(&fmt);
+
+delete m_preset;
+m_preset = new nle::EncodingPreset( preset );
+
+name->value(fmt.name);
+frame_size_w->value(fmt.w);
+frame_size_h->value(fmt.h);
+interlacing->value(fmt.interlacing);
+pixel_aspect_ratio->value(nle::pixel_aspect_ratio_to_string(fmt.pixel_aspect_ratio));
+
+nle::setAudioCodecMenu( audio_codec_menu, m_preset->m_file_type );
+nle::setVideoCodecMenu( video_codec_menu, m_preset->m_file_type );
+
+int len = video_codec_menu->size();
+for ( int i = 0; i < len; i++ ) {
+	lqt_codec_info_t* codec_info = (lqt_codec_info_t*)video_codec_menu->menu()[i].user_data();
+	if ( strcmp( fmt.video_codec, codec_info->name ) == 0 ) {
+		video_codec_menu->value(i);
+		video_codec = codec_info;
+		m_preset->setVideoCodec( (lqt_codec_info_t*)video_codec );
+		video_bitrate->value( m_preset->bitrate() );
+		if ( video_bitrate->value() <= 0 ) {
+			video_bitrate->deactivate();
+		} else {
+			video_bitrate->activate();
+		}
+		break;
+	}
+}
+
+
+len = audio_codec_menu->size();
+for ( int i = 0; i < len; i++ ) {
+	lqt_codec_info_t* codec_info = (lqt_codec_info_t*)audio_codec_menu->menu()[i].user_data();
+	if ( strcmp( fmt.audio_codec, codec_info->name ) == 0 ) {
+		audio_codec_menu->value(i);
+		audio_codec = codec_info;
+		m_preset->setAudioCodec( (lqt_codec_info_t*)audio_codec );
+		audio_bitrate->value( m_preset->audiobitrate() );
+		if ( audio_bitrate->value() <= 0 ) {
+			audio_bitrate->deactivate();
+		} else {
+			audio_bitrate->activate();
+		}
+		break;
+	}
+}
+
+
+switch ( fmt.framerate.frame_duration ) {
+	case 1200: // 25
+		frame_rate_choice->value( 0 );
+		break;
+	case 1001: //29.97
+		frame_rate_choice->value( 1 );
+		break;
+	case 1250: // 24
+		frame_rate_choice->value( 2 );
+		break;
+	case 2000: // 15
+		frame_rate_choice->value( 3 );
+		break;
+	case 600: //50
+		frame_rate_choice->value( 4 );
+		break;
+	case 500: // 60
+		frame_rate_choice->value( 5 );
+		break;
+}
+\#if (LQT_CODEC_API_VERSION & 0xffff) > 6
+switch ( m_preset->m_file_type ) {
+	case LQT_FILE_QT:
+		lqt_container_menu->value( 0 );
+		break;
+	case LQT_FILE_AVI_ODML:
+		lqt_container_menu->value( 1 );
+		break;
+	case LQT_FILE_MP4:
+		lqt_container_menu->value( 2 );
+		break;
+	case LQT_FILE_3GP:
+		lqt_container_menu->value( 3 );
+		break;
+}
+\#endif} {}
+  }
+} 
+
+class CodecOptions {open
+} {
+  Function {CodecOptions()} {open
+  } {
+    Fl_Window codecOptions {
+      label {Codec Options} open
+      xywh {426 416 345 305} type Double hide resizable modal
+    } {
+      Fl_Box codec_label {
+        label Codec
+        xywh {0 0 345 35} labelfont 1 labelsize 16
+      }
+      Fl_Group {} {open
+        xywh {0 35 345 230} resizable
+      } {
+        Fl_Browser parameters_browser {
+          callback {if ( parameters_browser->value() ) {
+	nle::setCodecParameter( this, parameters_browser->data( parameters_browser->value() ) );
+}}
+          xywh {5 40 165 220} resizable
+          code0 {\#include <FL/Fl_Hold_Browser.H>}
+          class Fl_Hold_Browser
+        }
+        Fl_Group {} {open
+          xywh {170 35 175 230}
+        } {
+          Fl_Value_Input parameter_int_input {
+            callback {nle::ParameterValue val( (int)o->value() );
+lqt_parameter_info_t* info = (lqt_parameter_info_t*)parameters_browser->data( parameters_browser->value() );
+if ( m_audio ) {
+	m_preset->setAudioParameter( info->name, val );
+} else {
+	m_preset->setVideoParameter( info->name, val );
+}}
+            xywh {175 40 165 25} step 1 deactivate
+          }
+          Fl_Input parameter_string_input {
+            callback {nle::ParameterValue val( o->value() );
+lqt_parameter_info_t* info = (lqt_parameter_info_t*)parameters_browser->data( parameters_browser->value() );
+if ( m_audio ) {
+	m_preset->setAudioParameter( info->name, val );
+} else {
+	m_preset->setVideoParameter( info->name, val );
+}}
+            xywh {175 70 165 25} deactivate
+          }
+          Fl_Choice parameter_stringlist_input {
+            callback {nle::ParameterValue val( o->text() );
+lqt_parameter_info_t* info = (lqt_parameter_info_t*)parameters_browser->data( parameters_browser->value() );
+if ( m_audio ) {
+	m_preset->setAudioParameter( info->name, val );
+} else {
+	m_preset->setVideoParameter( info->name, val );
+}} open
+            xywh {175 100 165 25} down_box BORDER_BOX deactivate
+          } {}
+          Fl_Box {} {
+            xywh {230 175 25 25} resizable
+          }
+        }
+      }
+      Fl_Group {} {open
+        xywh {0 265 345 40}
+      } {
+        Fl_Button {} {
+          label Cancel
+          callback {o->window()->hide();}
+          xywh {20 275 140 25} hide
+        }
+        Fl_Return_Button {} {
+          label Ok
+          callback {o->window()->hide();}
+          xywh {20 275 305 25} resizable hotspot
+        }
+      }
+    }
+  }
+  decl {bool m_audio;} {public
+  }
+  decl {nle::EncodingPreset* m_preset;} {public
+  }
+  Function {~CodecOptions()} {open
+  } {
+    code {delete codecOptions;} {}
+  }
+} 

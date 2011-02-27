@@ -1,0 +1,59 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.H} 
+code_name {.cxx}
+widget_class LiftGammaGainWidget {
+  label {Lift Gamma Gain} open
+  xywh {737 128 585 190} type Double visible
+} {
+  Fl_Box lift {
+    callback {m_dialog->read_values();}
+    xywh {0 25 195 115} box THIN_DOWN_BOX
+    code0 {\#include "Fl_Hsv_Color_Chooser.H"}
+    code1 {\#include "LiftGammaGainDialog.H"}
+    class Fl_Hsv_Color_Chooser
+  }
+  Fl_Box gamma {
+    callback {m_dialog->read_values();}
+    xywh {195 25 195 115} box THIN_DOWN_BOX
+    code0 {\#include "Fl_Hsv_Color_Chooser.H"}
+    class Fl_Hsv_Color_Chooser
+  }
+  Fl_Box gain {
+    callback {m_dialog->read_values();}
+    xywh {390 25 195 115} box THIN_DOWN_BOX
+    code0 {\#include "Fl_Hsv_Color_Chooser.H"}
+    class Fl_Hsv_Color_Chooser
+  }
+  Fl_Box {} {
+    label Lift
+    xywh {0 0 195 25} box THIN_UP_BOX
+  }
+  Fl_Box {} {
+    label Gamma
+    xywh {195 0 195 25} box THIN_UP_BOX
+  }
+  Fl_Box {} {
+    label Gain
+    xywh {390 0 195 25} box THIN_UP_BOX
+  }
+  decl {nle::LiftGammaGainDialog* m_dialog;} {public
+  }
+  Fl_Check_Button bypass {
+    label Bypass
+    callback {m_dialog->read_values();}
+    xywh {0 165 585 25} down_box DOWN_BOX
+  }
+  Fl_Value_Slider lift_slider {
+    callback {m_dialog->read_values();}
+    xywh {0 140 195 25} type {Horz Knob} step 0.001 value 0.5
+  }
+  Fl_Value_Slider gamma_slider {
+    callback {m_dialog->read_values();}
+    xywh {195 140 195 25} type {Horz Knob} step 0.001 value 0.5
+  }
+  Fl_Value_Slider gain_slider {
+    callback {m_dialog->read_values();}
+    xywh {390 140 195 25} type {Horz Knob} step 0.001 value 0.5
+  }
+} 

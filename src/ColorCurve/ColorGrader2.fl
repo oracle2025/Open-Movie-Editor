@@ -1,0 +1,44 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0107 
+header_name {.h} 
+code_name {.cxx}
+widget_class ColorGrader2 {
+  label {Color Curves} open selected
+  xywh {772 305 605 200} type Double align 5 visible
+} {
+  Fl_Box editor_red {
+    label Red
+    callback {m_dialog->read_values();}
+    xywh {5 20 145 145} box DOWN_BOX labelfont 1 labelcolor 1 align 5
+    code0 {\#include "CurveEditor2.H"}
+    code1 {\#include "globals.H"}
+    code2 {\#include "VideoViewGL.H"}
+    code3 {\#include "ColorCurveDialog.H"}
+    class CurveEditor2
+  }
+  Fl_Box editor_green {
+    label Green
+    callback {m_dialog->read_values();}
+    xywh {155 20 145 145} box DOWN_BOX labelfont 1 labelcolor 2 align 5
+    class CurveEditor2
+  }
+  Fl_Box editor_blue {
+    label Blue
+    callback {m_dialog->read_values();}
+    xywh {305 20 145 145} box DOWN_BOX labelfont 1 labelcolor 4 align 5
+    class CurveEditor2
+  }
+  Fl_Box editor_master {
+    label Master
+    callback {m_dialog->read_values();}
+    xywh {455 20 145 145} box DOWN_BOX labelfont 1 align 5
+    class CurveEditor2
+  }
+  Fl_Check_Button bypass_check {
+    label Bypass
+    callback {m_dialog->read_values();}
+    xywh {5 170 85 25} down_box DOWN_BOX
+  }
+  decl {nle::ColorCurveDialog* m_dialog;} {public
+  }
+} 

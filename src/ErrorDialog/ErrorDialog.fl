@@ -1,0 +1,83 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0106 
+header_name {.H} 
+code_name {.cxx}
+class ErrorDialog {open
+} {
+  Function {ErrorDialog()} {open
+  } {
+    Fl_Window errorDialog {
+      label Error open selected
+      xywh {499 222 375 290} type Double modal visible
+    } {
+      Fl_Box {} {
+        image {/home/oracle/Projekte/OpenME/code/src/icons/dialog-warning.xpm} xywh {30 40 50 50}
+      }
+      Fl_Box errorBox {
+        label {Could  not load File}
+        xywh {115 30 250 60} labelfont 1 labelsize 16 align 20
+      }
+      Fl_Button detailsButton {
+        label {Details <<}
+        callback {toggle_details();}
+        xywh {235 95 135 25}
+      }
+      Fl_Return_Button closeButton {
+        label Close
+        callback {o->window()->hide();}
+        xywh {235 260 135 25} hotspot
+      }
+      Fl_Text_Display errorDisplay {
+        xywh {5 125 365 130}
+      }
+    }
+    code {errorDisplay->buffer( textBuffer );
+show_details = true;} {}
+  }
+  Function {~ErrorDialog()} {} {
+    code {delete errorDialog;} {}
+  }
+  Function {show()} {open
+  } {
+    code {toggle_details();
+errorDialog->show();} {}
+  }
+  Function {shown()} {return_type int
+  } {
+    code {return errorDialog->shown();} {}
+  }
+  Function {error( const char* msg )} {return_type void
+  } {
+    code {errorBox->label( msg );} {}
+  }
+  Function {details( const char* msg )} {return_type void
+  } {
+    code {textBuffer.text( msg );} {}
+  }
+  decl {Fl_Text_Buffer textBuffer;} {}
+  decl {bool show_details;} {}
+  Function {toggle_details()} {open return_type void
+  } {
+    code {if ( textBuffer.length() == 0 ) {
+	errorDisplay->hide();
+	closeButton->position( closeButton->x(), 125 );
+	errorDialog->size( errorDialog->w(), 155 );
+	detailsButton->hide();
+	return;
+} else {
+	detailsButton->show();
+}
+if ( show_details ) {
+	errorDisplay->hide();
+	closeButton->position( closeButton->x(), 125 );
+	errorDialog->size( errorDialog->w(), 155 );
+	detailsButton->label( "Details >>" );
+} else {
+	errorDisplay->show();
+	closeButton->position( closeButton->x(), 260 );
+	errorDialog->size( errorDialog->w(), 290 );
+	detailsButton->label( "Details <<" );
+}
+show_details = !show_details;} {}
+  }
+} 

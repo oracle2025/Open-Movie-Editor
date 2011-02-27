@@ -1,0 +1,64 @@
+ * Update Address of the FSF
+ * Name für Tracks ändern
+ * Tilt and Scale Video Clips
+ * Media Browser
+ * Log based File Format
+ * 16:9 encoding, clipping, black bars
+
+Undo-Redo:
+Store at most 50 Steps of Undo-Redo in XML
+
+PLUGINS:
+
+Create a IVideoReader Decorator for rendering effects on top of video clips
+
+====
+
+Long Term:
+
+Use MiniCppUnit for unit testing:
+http://minicppunit.sourceforge.net/
+
+Use ggcov for test coverage:
+http://ggcov.sourceforge.net/
+
+Maybe:
+Use Uncrustify for source beautification
+http://uncrustify.sourceforge.net/
+
+InstallJammer for Installer
+http://www.installjammer.com/
+
+Pootle for managing translations
+http://freshmeat.net/projects/pootle/
+
+Project Stacking, Prerendering changed parts to mjpeg
+
+Don't do stupid things during directory scanning, like parsing xml over and over
+use strace-account to find stupid places
+
+
+Verschiedene Debug-Techniken aus Why Userspace Sucks--Or 101 Really Dumb Things Your App Shouldn't Do (http://www.linuxsymposium.org/2006/linuxsymposium_procv1.pdf) und  http://people.redhat.com/drepper/defprogramming.pdf testen
+
+int addvec(int n, int arr[n]);
+
+use realpath or better? canonicalize_file_name
+
+compile with -Wextra, hint: If you don't intend to use a parameter, don't give it a name.
+
+remove Timeout for Project-Saving
+
+use llrint instead of rintl in SimplePlaybackCore
+Clip-Name for Effect Plugin Windows
+
+
+
+
+
+Beispiel für Codec Zusammenfassung.
+Quicktime DV(PAL)
+720x576, 4:3, 25 fps
+Video: FFMPEG DV (PAL)
+Audio: Twos, 48000
+Top field first
+

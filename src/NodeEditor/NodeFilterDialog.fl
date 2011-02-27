@@ -1,0 +1,160 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0109 
+header_name {.H} 
+code_name {.cxx}
+decl {\#include "NodeFilter.H"} {public
+} 
+
+decl {\#include "IEffectDialog.H"} {public
+} 
+
+decl {\#include "NodeFilterFrei0rFactory.H"} {public
+} 
+
+decl {\#include "NodeFilterFrei0rFactoryPlugin.H"} {} 
+
+decl {\#include "NodeFilterBezierCurveFactoryPlugin.H"} {public
+} 
+
+decl {\#include "NodeFilterPreviewFactoryPlugin.H"} {public
+} 
+
+decl {\#include <sys/types.h>} {selected global
+} 
+
+decl {\#include <sys/stat.h>} {selected global
+} 
+
+decl {\#include <unistd.h>} {selected global
+} 
+
+class NodeFilterDialog {: {public nle::IEffectDialog}
+} {
+  Function {NodeFilterDialog( nle::NodeFilter* filter )} {open
+  } {
+    code {m_factory = g_node_filter_frei0r_factory;} {}
+    Fl_Window m_dialog {
+      label {Node Editor} open
+      xywh {590 247 650 495} type Double resizable visible
+    } {
+      Fl_Tile {} {open
+        xywh {5 55 640 375} resizable
+      } {
+        Fl_Browser plugin_browser {
+          callback {if ( o->value() <= 0 ) {
+	return;
+}
+INodeFilterFactoryPlugin* ffp = (INodeFilterFactoryPlugin*)o->data(o->value());
+if ( ffp ) {
+	graph_editor->addNode( ffp );
+}}
+          xywh {5 55 280 375}
+          code0 {\#include <FL/Fl_Hold_Browser.H>}
+          class Fl_Hold_Browser
+        }
+        Fl_Scroll {} {open
+          xywh {285 55 360 375} box DOWN_FRAME
+        } {
+          Fl_Box graph_editor {
+            callback {nle::g_videoView->redraw();
+nle::g_timeline->changing();}
+            xywh {285 55 2000 2000} box FLAT_BOX
+            code0 {\#include "Frei0rGraphEditor.H"}
+            code1 {\#include "VideoViewGL.H"}
+            code2 {\#include "Timeline.H"}
+            class Frei0rGraphEditor
+          }
+        }
+      }
+      Fl_Box {} {
+        label {Node Editor}
+        xywh {0 0 650 50} labelfont 1 labelsize 16
+      }
+      Fl_Return_Button {} {
+        label Close
+        callback {delete this;}
+        xywh {5 465 640 25}
+      }
+      Fl_Group {} {open
+        xywh {5 435 640 25}
+      } {
+        Fl_Check_Button {} {
+          label Bypass
+          xywh {5 435 455 25} down_box DOWN_BOX hide resizable
+        }
+        Fl_Button trash_can {
+          image {../../icons/trash.xpm} xywh {620 435 25 25}
+        }
+        Fl_Button {} {
+          label {Save ...}
+          callback {char* filename = fl_file_chooser( "Open Node Preset", 0, 0 );
+
+if ( filename ) {
+	struct stat statbuf;
+	int r = stat( filename, &statbuf );
+	if ( r == 0 ) {
+		r = fl_choice( "File exists, replace?\\nWill be overwritten.", "&Cancel", "&Replace", 0 );
+		if ( r == 0 ) {
+			return;
+		}
+	}
+	TiXmlDocument doc( filename );
+	TiXmlDeclaration* dec = new TiXmlDeclaration( "1.0", "", "no" );
+	doc.LinkEndChild( dec );
+	TiXmlElement* graph = new TiXmlElement( "open_movie_editor_node_graph" );
+	doc.LinkEndChild( graph );
+	m_filter->writeXML( graph );
+	doc.SaveFile();
+	
+}}
+          xywh {460 435 80 25}
+          code0 {\#include <tinyxml.h>}
+          code1 {\#include <FL/Fl_File_Chooser.H>}
+        }
+        Fl_Button {} {
+          label {Load...}
+          callback {char* filename = fl_file_chooser( "Open Node Preset", 0, 0 );
+
+if ( filename ) {
+	TiXmlDocument doc( filename );
+	if ( doc.LoadFile() ) {
+		TiXmlHandle docH( &doc );
+		TiXmlElement* graph = docH.FirstChild( "open_movie_editor_node_graph" ).Element();
+		if ( graph ) {
+			m_filter->readXML( graph );
+			graph_editor->init_all_widgets();
+		}
+	}
+}}
+          xywh {540 435 80 25}
+        }
+      }
+    }
+    code {m_filter = filter;
+plugin_browser->add( m_bezier_curve_factory.name(), (void*)&m_bezier_curve_factory );
+plugin_browser->add( m_preview_factory.name(), (void*)&m_preview_factory );
+for ( effect_node* p = m_factory->m_effects; p; p = p->next ) {
+	plugin_browser->add( p->effect->name(), (void*)p->effect );
+}
+graph_editor->m_trash = trash_can;
+graph_editor->setFilter( m_filter );} {}
+  }
+  Function {~NodeFilterDialog()} {open
+  } {
+    code {m_filter->m_dialog = 0;
+m_dialog->hide();
+delete m_dialog;} {}
+  }
+  Function {show()} {open
+  } {
+    code {m_dialog->show();} {}
+  }
+  Function {shown()} {open return_type int
+  } {
+    code {return m_dialog->shown();} {}
+  }
+  decl {nle::NodeFilter* m_filter;} {}
+  decl {NodeFilterFrei0rFactory* m_factory;} {}
+  decl {NodeFilterBezierCurveFactoryPlugin m_bezier_curve_factory;} {}
+  decl {nle::NodeFilterPreviewFactoryPlugin m_preview_factory;} {}
+} 

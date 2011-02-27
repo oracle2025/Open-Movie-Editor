@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Open Movie Editor
+Comment=Video Editor
+Categories=Application;AudioVideo;Multimedia;
+Encoding=UTF-8
+Exec=openmovieeditor
+Icon=openmovieeditor.xpm
+Terminal=false
+Type=Application

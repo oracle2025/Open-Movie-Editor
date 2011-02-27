@@ -1,0 +1,40 @@
+body {
+  font-family: Verdana, Helvetica, sans-serif;
+  font-size: 0.8em;
+  padding: 40px;
+  margin: 60px;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+}
+
+h2 {
+  background-color: #abec5e;
+  border: 1px solid #53722e;
+  padding: 5px;
+  clear: both;
+}
+
+img {
+  float: right;
+  border: 1px solid #53722e;
+  margin: 10px;
+  padding: 5px;
+}
+
+p {
+  text-align: justify;
+}
+
+a:link {
+  color: #727e0a;
+}
+
+a:visited {
+  color: #727e0a;
+}
+
+a:active {
+  color: #9db029;
+}
+
